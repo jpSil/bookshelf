@@ -31,7 +31,8 @@ public class AppLogic {
             System.out.println("2: Modify book information");
             System.out.println("3. Mark a book as read");
             System.out.println("4. List all the books on your shelf");
-            System.out.println("5. Exit your bookshelf");
+            System.out.println("5. Remove a book from your shelf");
+            System.out.println("6. Exit your bookshelf");
             printLines();
 
             choice = input.nextInt();
@@ -49,6 +50,9 @@ public class AppLogic {
                     listBooks();
                     break;
                 case 5:
+                    removeBookFromShelf();
+                    break;
+                case 6:
                     System.out.println("Closing bookshelf, goodbye!");
                     running = false;
                     break;
@@ -91,6 +95,20 @@ public class AppLogic {
         connection.insertBook(book);
 
         printLines();
+    }
+
+    public void removeBookFromShelf() {
+        System.out.println("Please enter the ID of the book you want to remove");
+        int rowid = input.nextInt();
+
+        Book book = connection.findBook(rowid);
+        System.out.println("Removing " + book.getName() + " by " + book.getAuthor() + " ID: " + book.getRowID());
+
+        connection.removeBook(rowid);
+        System.out.println("Book removed from shelf");
+
+        printLines();
+
     }
 
     // Lists all books on bookshelf

@@ -47,6 +47,25 @@ public class DatabaseConnection {
         }
     }
 
+    // Removes a book from database
+    public void removeBook(int rowid) {
+        String query = "DELETE FROM books WHERE rowid = ?";
+        String reOrderRows = "VACUUM";
+
+        try(Connection connection = this.connection()) {
+            PreparedStatement delete = connection.prepareStatement(query);
+            delete.setInt(1, rowid);
+            delete.executeUpdate();
+
+            PreparedStatement reOrder = connection.prepareStatement(reOrderRows);
+            reOrder.executeUpdate();
+
+        } catch(SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+    }
+
     // Finds book that corresponds with rowid
     public Book findBook(int rowid) {
         Book book = new Book();
