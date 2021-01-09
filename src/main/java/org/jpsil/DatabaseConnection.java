@@ -33,7 +33,7 @@ public class DatabaseConnection {
         int hasBeenRead = book.getHasBeenRead();
         int owned = book.getOwned();
 
-        String insertStatement = "INSERT INTO books(name,author,publish_year,category,has_been_read) VALUES(?,?,?,?,?,?)";
+        String insertStatement = "INSERT INTO books(name,author,publish_year,category,has_been_read, owned) VALUES(?,?,?,?,?,?)";
 
         try(Connection connection = connection()) {
             PreparedStatement statement = connection.prepareStatement(insertStatement);

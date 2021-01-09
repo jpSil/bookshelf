@@ -1,70 +1,120 @@
 package org.jpsil;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 // Holds everything needed for running application
 public class AppLogic {
 
+
+
     private final Scanner input;
     private String URL;
-    private final DatabaseConnection connection;
+    private DatabaseConnection connection;
 
-    public AppLogic(String URL) {
+    public AppLogic() {
         input = new Scanner(System.in);
-        this.URL = URL;
-        connection = new DatabaseConnection(URL);
     }
 
     // Runs application
     public void runApp() {
-        System.out.println("WELCOME TO YOUR BOOKSHELF");
-        System.out.println("------------------------------------------");
-
         input.useDelimiter("\\n");
 
-        boolean running = true;
-        int choice;
-        while(running) {
-            System.out.println("What would you like to do?");
-            System.out.println("1: Add a new book to your shelf");
-            System.out.println("2: Modify book information");
-            System.out.println("3. Mark a book as read");
-            System.out.println("4. Mark a book as owned");
-            System.out.println("5. List all the books on your shelf");
-            System.out.println("6. Remove a book from your shelf");
-            System.out.println("7. Exit your bookshelf");
+        int initiate = initiateConnection();
+        if (initiate == 0) {
+
+            System.out.println("WELCOME TO YOUR BOOKSHELF");
             printLines();
 
-            choice = input.nextInt();
-            switch (choice) {
-                case 1:
-                    addBookToShelf();
-                    break;
-                case 2:
-                    modifyBookInfo();
-                    break;
-                case 3:
-                    markBookAsRead();
-                    break;
-                case 4:
-                    markBookAsOwned();
-                    break;
-                case 5:
-                    listBooks();
-                    break;
-                case 6:
-                    removeBookFromShelf();
-                    break;
-                case 7:
-                    System.out.println("Closing bookshelf, goodbye!");
-                    running = false;
-                    break;
-                default:
-                    System.out.println("No valid choice made");
-                    printLines();
+            boolean running = true;
+            int choice;
+            while (running) {
+                System.out.println("What would you like to do?");
+                System.out.println("1: Add a new book to your shelf");
+                System.out.println("2: Modify book information");
+                System.out.println("3. Mark a book as read");
+                System.out.println("4. Mark a book as owned");
+                System.out.println("5. List all the books on your shelf");
+                System.out.println("6. Remove a book from your shelf");
+                System.out.println("7. Exit your bookshelf");
+                printLines();
 
+                choice = input.nextInt();
+                switch (choice) {
+                    case 1:
+                        addBookToShelf();
+                        break;
+                    case 2:
+                        modifyBookInfo();
+                        break;
+                    case 3:
+                        markBookAsRead();
+                        break;
+                    case 4:
+                        markBookAsOwned();
+                        break;
+                    case 5:
+                        listBooks();
+                        break;
+                    case 6:
+                        removeBookFromShelf();
+                        break;
+                    case 7:
+                        System.out.println("Closing bookshelf, goodbye!");
+                        input.close();
+                        running = false;
+                        break;
+                    default:
+                        System.out.println("No valid choice made");
+                        printLines();
+
+                }
             }
+        }
+        else {
+            input.close();
+            System.out.println("Exiting program... goodbye!");
+        }
+    }
+
+    public int initiateConnection() {
+        int exit;
+        System.out.println("Please select a bookshelf: ");
+
+        File[] bookshelves = findDatabases();
+        listDatabases(bookshelves);
+        System.out.println(bookshelves.length + 1 + ": Exit program");
+
+        int userChoice = input.nextInt();
+        if(userChoice == bookshelves.length + 1) {
+            return exit = 1;
+        } else {
+            this.URL = "jdbc:sqlite:" + bookshelves[userChoice - 1].getPath();
+            this.connection = new DatabaseConnection(URL);
+        }
+        return exit = 0;
+
+    }
+
+    // Finds all database files in program directory
+    public File[] findDatabases() {
+        File dir = new File("./");
+        File[] files = dir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".db");
+            }
+        });
+
+        return files;
+    }
+
+    // lists all database files in program directory
+    public void listDatabases(File[] files) {
+        for(int index = 0; index < files.length; index++) {
+            System.out.println(index + 1 +": " + files[index].getName());
         }
     }
 
@@ -84,7 +134,7 @@ public class AppLogic {
         System.out.print("Category: ");
         String category = input.next();
 
-        System.out.print("Have you read the book? Y/N ");
+        System.out.print("Have you read the book? Y/N: ");
         int hasBeenRead;
         if(input.next().toLowerCase().equals("y")) {
             hasBeenRead = 1;
@@ -92,14 +142,16 @@ public class AppLogic {
         else {
             hasBeenRead = 0;
         }
-        System.out.print("Do you own the book? Y/N");
+        System.out.print("Do you own the book? Y/N: ");
         int owned;
         if(input.next().toLowerCase().equals("y")) {
             owned = 1;
         }
         else {
-            owned = 1;
+            owned = 0;
         }
+
+        System.out.println();
 
         System.out.println("Placing " + name + " in to bookshelf");
         Book book = new Book(name, author, publishYear, category, hasBeenRead, owned);
@@ -108,6 +160,7 @@ public class AppLogic {
         printLines();
     }
 
+    // Removes a book from the shelf
     public void removeBookFromShelf() {
         System.out.println("Please enter the ID of the book you want to remove");
         int rowid = input.nextInt();
