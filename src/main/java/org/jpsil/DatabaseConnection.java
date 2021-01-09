@@ -31,8 +31,9 @@ public class DatabaseConnection {
         String publishYear = book.getPublishYear();
         String category = book.getCategory().toLowerCase();
         int hasBeenRead = book.getHasBeenRead();
+        int owned = book.getOwned();
 
-        String insertStatement = "INSERT INTO books(name,author,publish_year,category,has_been_read) VALUES(?,?,?,?,?)";
+        String insertStatement = "INSERT INTO books(name,author,publish_year,category,has_been_read) VALUES(?,?,?,?,?,?)";
 
         try(Connection connection = connection()) {
             PreparedStatement statement = connection.prepareStatement(insertStatement);
@@ -41,6 +42,7 @@ public class DatabaseConnection {
             statement.setString(3, publishYear);
             statement.setString(4, category);
             statement.setInt(5, hasBeenRead);
+            statement.setInt(6, owned);
             statement.executeUpdate();
         } catch(SQLException ex) {
             System.out.println(ex.getMessage());
@@ -93,7 +95,7 @@ public class DatabaseConnection {
     // Lists all books in database
     public ArrayList<Book> listBooks() {
         ArrayList<Book> bookList = new ArrayList<>();
-        String query = "SELECT  rowid, name, author, publish_year, category, has_been_read FROM books";
+        String query = "SELECT  rowid, name, author, publish_year, category, has_been_read, owned FROM books";
 
         try(Connection conn = this.connection()) {
             Statement statement = conn.createStatement();
@@ -101,7 +103,8 @@ public class DatabaseConnection {
 
             while(results.next()) {
                 Book book = new Book(results.getString("name"), results.getString("author"),
-                        results.getString("publish_year"), results.getString("category"), results.getInt("has_been_read"));
+                        results.getString("publish_year"), results.getString("category"), results.getInt("has_been_read"),
+                        results.getInt("owned"));
                 book.setRowID(results.getInt("rowid"));
                 bookList.add(book);
             }
@@ -128,7 +131,7 @@ public class DatabaseConnection {
         }
     }
 
-    // Updates the has_been_read field of a book entry
+    // Updates the 'has_been_read' field of a book entry
     public void updateHasBeenRead(int rowid) {
         String update = "UPDATE books SET has_been_read = 1 WHERE rowid = ?";
 
@@ -138,6 +141,19 @@ public class DatabaseConnection {
             statement.executeUpdate();
         }
         catch(SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    // Updates the 'owned' field of a book entry
+    public void updateOwned(int rowid) {
+        String update = "UPDATE books SET owned = 1 WHERE rowid = ?";
+
+        try(Connection connection = this.connection()) {
+            PreparedStatement statement = connection.prepareStatement(update);
+            statement.setInt(1, rowid);
+            statement.executeUpdate();
+        } catch(SQLException ex) {
             System.out.println(ex.getMessage());
         }
     }

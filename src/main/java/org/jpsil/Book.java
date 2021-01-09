@@ -9,13 +9,15 @@ public class Book {
     private String publishYear;
     private String category;
     private int hasBeenRead;
+    private int owned;
 
-    public Book(String name, String author, String publishYear, String category, int hasBeenRead) {
+    public Book(String name, String author, String publishYear, String category, int hasBeenRead, int owned) {
         this.name = name;
         this.author = author;
         this.publishYear = publishYear;
         this.category = category;
         this.hasBeenRead = hasBeenRead;
+        this.owned = owned;
     }
 
     public Book() {}
@@ -66,5 +68,13 @@ public class Book {
 
     public void setHasBeenRead(int hasBeenRead) {
         this.hasBeenRead = hasBeenRead;
+    }
+
+    public int getOwned() {
+        return owned;
+    }
+
+    public void setOwned(int owned) {
+        this.owned = owned;
     }
 }

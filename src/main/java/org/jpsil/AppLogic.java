@@ -30,9 +30,10 @@ public class AppLogic {
             System.out.println("1: Add a new book to your shelf");
             System.out.println("2: Modify book information");
             System.out.println("3. Mark a book as read");
-            System.out.println("4. List all the books on your shelf");
-            System.out.println("5. Remove a book from your shelf");
-            System.out.println("6. Exit your bookshelf");
+            System.out.println("4. Mark a book as owned");
+            System.out.println("5. List all the books on your shelf");
+            System.out.println("6. Remove a book from your shelf");
+            System.out.println("7. Exit your bookshelf");
             printLines();
 
             choice = input.nextInt();
@@ -47,12 +48,15 @@ public class AppLogic {
                     markBookAsRead();
                     break;
                 case 4:
-                    listBooks();
+                    markBookAsOwned();
                     break;
                 case 5:
-                    removeBookFromShelf();
+                    listBooks();
                     break;
                 case 6:
+                    removeBookFromShelf();
+                    break;
+                case 7:
                     System.out.println("Closing bookshelf, goodbye!");
                     running = false;
                     break;
@@ -88,10 +92,17 @@ public class AppLogic {
         else {
             hasBeenRead = 0;
         }
-        System.out.println();
+        System.out.print("Do you own the book? Y/N");
+        int owned;
+        if(input.next().toLowerCase().equals("y")) {
+            owned = 1;
+        }
+        else {
+            owned = 1;
+        }
 
         System.out.println("Placing " + name + " in to bookshelf");
-        Book book = new Book(name, author, publishYear, category, hasBeenRead);
+        Book book = new Book(name, author, publishYear, category, hasBeenRead, owned);
         connection.insertBook(book);
 
         printLines();
@@ -122,6 +133,7 @@ public class AppLogic {
             String name = books.get(i).getName();
             String author = books.get(i).getAuthor();
             String category = books.get(i).getCategory();
+
             String readIt;
             if(books.get(i).getHasBeenRead() == 1) {
                 readIt = "Yes";
@@ -130,7 +142,16 @@ public class AppLogic {
                 readIt = "No";
             }
 
-            System.out.println("ID: " + rowID + " | " + "Name: " + name + " | Author: " + author + " | Category: " + category + " | Read it: " + readIt);
+            String owned;
+            if(books.get(i).getOwned() == 1) {
+                owned = "Yes";
+            }
+            else {
+                owned = "No";
+            }
+
+            System.out.println("ID: " + rowID + " | " + "Name: " + name + " | Author: " + author + " | Category: " + category +
+                    " | Read it: " + readIt + " | Owned: " + owned);
         }
         printLines();
     }
@@ -149,6 +170,21 @@ public class AppLogic {
         printLines();
     }
 
+    // Marks a book as read
+    public void markBookAsOwned() {
+        System.out.println("Please enter the ID of the book you want to mark as 'owned'");
+        int rowid = input.nextInt();
+
+        connection.updateOwned(rowid);
+        Book book = connection.findBook(rowid);
+
+        System.out.println();
+        System.out.println("Marking as read: " + book.getRowID() + " | " + book.getName() + " | " + book.getAuthor());
+
+        printLines();
+    }
+
+    // Updates information of a database field
     public void modifyBookInfo() {
         System.out.print("Please enter book ID: ");
         int rowid = input.nextInt();
