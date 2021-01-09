@@ -123,16 +123,16 @@ public class AppLogic {
         System.out.println("Please enter book details:");
 
         System.out.print("Name: ");
-        String name = input.next();
+        String name = input.next().toLowerCase();
 
         System.out.print("Author: ");
-        String author = input.next();
+        String author = input.next().toLowerCase();
 
         System.out.print("Publish year: ");
-        String publishYear = input.next();
+        String publishYear = input.next().toLowerCase();
 
         System.out.print("Category: ");
-        String category = input.next();
+        String category = input.next().toLowerCase();
 
         System.out.print("Have you read the book? Y/N: ");
         int hasBeenRead;
@@ -166,10 +166,18 @@ public class AppLogic {
         int rowid = input.nextInt();
 
         Book book = connection.findBook(rowid);
-        System.out.println("Removing " + book.getName() + " by " + book.getAuthor() + " ID: " + book.getRowID());
 
-        connection.removeBook(rowid);
-        System.out.println("Book removed from shelf");
+        System.out.println("Are you sure you want to remove " + book.getName() + " by " + book.getAuthor() + " from your bookshelf? Y/N: ");
+        String verify = input.next();
+
+        if(verify.toLowerCase().equals("y")) {
+            System.out.println("Removing " + book.getName() + " by " + book.getAuthor() + " ID: " + book.getRowID());
+            connection.removeBook(rowid);
+            System.out.println("Book removed from shelf");
+
+        } else {
+            System.out.println("Removal cancelled");
+        }
 
         printLines();
 
@@ -246,7 +254,7 @@ public class AppLogic {
         String field = input.next();
 
         System.out.print("Please enter new information: ");
-        String info = input.next();
+        String info = input.next().toLowerCase();
 
         System.out.println("Updating book information...");
         connection.updateBook(rowid, field, info);
