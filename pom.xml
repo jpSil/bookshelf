@@ -7,6 +7,7 @@
   <groupId>org.jpsil</groupId>
   <artifactId>bookshelf</artifactId>
   <version>1.0</version>
+  <packaging>jar</packaging>
 
   <name>bookshelf</name>
   <!-- FIXME change it to the project's website -->
@@ -92,24 +93,28 @@
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>3.2.4</version>
+          <artifactId>maven-assembly-plugin</artifactId>
           <executions>
             <execution>
               <phase>package</phase>
               <goals>
-                <goal>shade</goal>
+                <goal>single</goal>
               </goals>
-              <configuration>
-                <transformers>
-                  <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                    <mainClass>org.jpsil.Main</mainClass>
-                  </transformer>
-                </transformers>
-              </configuration>
             </execution>
           </executions>
+          <configuration>
+            <archive>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                <addClasspath>true</addClasspath>
+                <mainClass>org.jpsil.Main</mainClass>
+              </manifest>
+            </archive>
+            <descriptorRefs>
+              <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
