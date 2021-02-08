@@ -79,23 +79,42 @@ public class AppLogic {
         }
     }
 
+    // Initiate connection
     public int initiateConnection() {
         int exit;
-        System.out.println("Please select a bookshelf: ");
+        System.out.println("Please select existing bookshelf or create a new one: ");
 
+        //Find and list all databases in program folder
         File[] bookshelves = findDatabases();
         listDatabases(bookshelves);
-        System.out.println(bookshelves.length + 1 + ": Exit program");
+        System.out.println(bookshelves.length + 1 + ": Create new bookshelf");
+        System.out.println(bookshelves.length + 2 + ": Exit program");
 
+        // exit program, create new database file, or connect to existing database
         int userChoice = input.nextInt();
-        if(userChoice == bookshelves.length + 1) {
+        if(userChoice == bookshelves.length + 2) {
             return exit = 1;
-        } else {
+
+        }
+        else if(userChoice == bookshelves.length + 1) {
+            System.out.println("Please enter name for new bookshelf: ");
+            String bookshelfName = input.next();
+            createNewBookshelf(bookshelfName);
+            System.out.println("Created bookshelf: " + bookshelfName);
+        }
+        else {
             this.URL = "jdbc:sqlite:" + bookshelves[userChoice - 1].getPath();
             this.connection = new DatabaseConnection(URL);
         }
         return exit = 0;
 
+    }
+
+    // Create new bookshelf database file with table books
+    public void createNewBookshelf(String url) {
+        this.URL = "jdbc:sqlite:" + url + ".db";
+        this.connection = new DatabaseConnection(URL);
+        connection.createBooksTable();
     }
 
     // Finds all database files in program directory

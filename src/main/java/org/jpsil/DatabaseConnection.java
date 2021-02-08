@@ -24,6 +24,20 @@ public class DatabaseConnection {
         return connection;
     }
 
+    // Create a new books table
+    public void createBooksTable() {
+        String table = "CREATE TABLE books(name varchar(255),author varchar(255), publish_year varchar(255), category varchar(255), " +
+                                           "has_been_read int, owned int" + ")";
+        try(Connection connection = connection()) {
+
+            Statement statement = connection.createStatement();
+            statement.execute(table);
+
+        } catch(SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
     // Inserts books in to database
     public void insertBook(Book book) {
         String name = book.getName();
